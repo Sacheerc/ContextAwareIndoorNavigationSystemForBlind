@@ -15,7 +15,7 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-
+    <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION" />
 
     <uses-feature
         android:name="android.hardware.camera"
@@ -40,7 +40,20 @@
         android:roundIcon="@drawable/ar_real_estate_incon"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".android.activity.FingerprintCollectorActivity"></activity>
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+        <meta-data
+            android:name="com.google.android.maps.v2.API_KEY"
+            android:value="@string/google_maps_key" />
+        <meta-data
+            android:name="com.indooratlas.android.sdk.API_KEY"
+            android:value="@string/indooratlas_api_key" />
+        <meta-data
+            android:name="com.indooratlas.android.sdk.API_SECRET"
+            android:value="@string/indooratlas_api_secret" />
+        <activity android:name=".android.activity.WayFindingActivity"></activity>
+        <activity android:name=".android.activity.FingerprintCollectorActivity" />
         <activity android:name=".android.activity.LocationDebuggerActivity" />
         <activity android:name=".android.activity.MainActivity">
             <intent-filter>

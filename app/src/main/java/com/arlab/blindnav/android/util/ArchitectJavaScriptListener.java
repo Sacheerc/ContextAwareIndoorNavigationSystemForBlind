@@ -7,6 +7,7 @@ import com.arlab.blindnav.R;
 import com.arlab.blindnav.android.activity.FingerprintCollectorActivity;
 import com.arlab.blindnav.android.activity.LocationDebuggerActivity;
 import com.arlab.blindnav.android.activity.OfferDetailActivity;
+import com.arlab.blindnav.android.activity.WayFindingActivity;
 import com.arlab.blindnav.android.extension.ArchitectViewExtension;
 import com.arlab.blindnav.data.DataProvider;
 import com.arlab.blindnav.data.model.Offer;
@@ -50,6 +51,11 @@ public class ArchitectJavaScriptListener extends ArchitectViewExtension implemen
         case "open_fingerprint_collector": {
           Intent fingerprintCollector = new Intent(activity, FingerprintCollectorActivity.class);
           activity.startActivity(fingerprintCollector);
+          break;
+        }
+        case "open_way_finder": {
+          Intent wayFindingActivity = new Intent(activity, WayFindingActivity.class);
+          activity.startActivity(wayFindingActivity);
           break;
         }
         case "places_labels_get": {

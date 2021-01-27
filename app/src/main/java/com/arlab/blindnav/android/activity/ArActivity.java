@@ -28,6 +28,7 @@ import com.arlab.blindnav.android.util.location.BaseLocationStrategy;
 import com.arlab.blindnav.android.util.location.LocationChangesListener;
 import com.arlab.blindnav.android.util.location.LocationUtils;
 import com.arlab.blindnav.data.DataProvider;
+import com.indooratlas.android.sdk._internal.i3;
 import com.wikitude.architect.ArchitectStartupConfiguration;
 import com.wikitude.architect.ArchitectView;
 
@@ -139,7 +140,7 @@ public class ArActivity extends AppCompatActivity{
     public void onScanResult(int callbackType, ScanResult result) {
       super.onScanResult(callbackType, result);
       String advertisingString = byteArrayToHex(result.getScanRecord().getBytes());
-      Log.i(TAG, result.getDevice().getAddress() + " - RSSI: " + result.getRssi() + "\t - " + advertisingString + " - " + result.getDevice().getName());
+//      Log.i(TAG, result.getDevice().getAddress() + " - RSSI: " + result.getRssi() + "\t - " + advertisingString + " - " + result.getDevice().getName());
 
       boolean contains = false;
       for (int i = 0; i < scannedDevicesList.size(); i++) {
@@ -167,18 +168,18 @@ public class ArActivity extends AppCompatActivity{
   };
 
   private void calculateLocation() {
-    ArrayList<Double> p_1 = coordinatesMap.get("D3:FC:9B:90:18:13");
-    ArrayList<Double> p_2 = coordinatesMap.get("ED:0F:E2:55:4F:F2");
-    ArrayList<Double> p_3 = coordinatesMap.get("FB:A7:68:D0:2B:B1");
-    Point p1 = new Point(p_1.get(0), p_1.get(1), p_1.get(2));
-    Point p2 = new Point(p_2.get(0), p_2.get(1), p_2.get(2));
-    Point p3 = new Point(p_3.get(0), p_3.get(1), p_3.get(2));
-    if (p1.gr() != 0 && p2.gr() != 0 && p3.gr() != 0) {
-      double[] a = Trilateration.Compute(p1, p2, p3);
-      if (a != null) {
+    if (coordinatesMap.size() >= 3) {
+      ArrayList<Double> p_1 = coordinatesMap.get("D3:FC:9B:90:18:13");
+      ArrayList<Double> p_2 = coordinatesMap.get("ED:0F:E2:55:4F:F2");
+      ArrayList<Double> p_3 = coordinatesMap.get("FB:A7:68:D0:2B:B1");
+
+      Point p1 = new Point(p_1.get(0), p_1.get(1), p_1.get(2));
+      Point p2 = new Point(p_2.get(0), p_2.get(1), p_2.get(2));
+      Point p3 = new Point(p_3.get(0), p_3.get(1), p_3.get(2));
+      if (p1.gr() != 0 && p2.gr() != 0 && p3.gr() != 0) {
+        double[] a = Trilateration.Compute(p1, p2, p3);
         architectView.setLocation(a[0], a[1], ALTITUDE_CONST, 100);
       }
-
     }
   }
 

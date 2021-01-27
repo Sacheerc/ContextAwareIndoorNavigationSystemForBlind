@@ -157,6 +157,13 @@ let World = {
             AR.platform.sendJSONObject(JSONcall);
         },
 
+    openMap: function openMapCallFn() {
+                const JSONcall = {
+                    action: "open_way_finder"
+                };
+                AR.platform.sendJSONObject(JSONcall);
+            },
+
     openFingerprintCollector: function openFingerprintCollectorFn() {
                 const JSONcall = {
                     action: "open_fingerprint_collector"

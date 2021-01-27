@@ -5,6 +5,11 @@ android {
     buildToolsVersion "29.0.2"
     ndkVersion "21.0.6113669"
 
+    // note: use gradle.properties in project root level to set your api credentials
+    def apiKey = project.properties['indoorAtlasApiKey'] ?: "api-key-not-set"
+    def apiSecret = project.properties['indoorAtlasApiSecret'] ?: "api-secret-not-set"
+    def backgroundReportEndPoint = project.properties['backgroundReportEndPoint'] ?: ""
+
     defaultConfig {
         applicationId "com.arlab.blindnav"
         minSdkVersion 21
@@ -13,6 +18,11 @@ android {
         versionName "0.5"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        // avoid getting errors from malformed string resources if secret contains '%' chars
+        resValue "string", "indooratlas_api_key", apiKey
+        resValue "string", "indooratlas_api_secret", apiSecret.replaceAll("%", "\\\\u0025")
+        resValue "string", "background_report_endpoint", backgroundReportEndPoint
     }
 
     buildTypes {
@@ -26,6 +36,9 @@ android {
 repositories {
     flatDir {
         dirs 'libs'
+    }
+    maven {
+        url  "http://indooratlas-ltd.bintray.com/mvn-public"
     }
 }
 
@@ -51,4 +64,11 @@ dependencies {
     implementation 'com.google.android.gms:play-services-location:17.0.0'
     implementation 'com.google.android.material:material:1.1.0'
     implementation 'androidx.preference:preference:1.1.0'
+
+//    indoorAtlas dependencies
+    implementation 'com.google.android.gms:play-services-maps:16.1.0'
+    implementation 'com.google.maps.android:android-maps-utils:0.3.4'
+    implementation 'com.squareup.picasso:picasso:2.5.2'
+    implementation 'com.davemorrissey.labs:subsampling-scale-image-view:3.2.0'
+    implementation "com.indooratlas.android:indooratlas-android-sdk:3.3.6@aar"
 }
