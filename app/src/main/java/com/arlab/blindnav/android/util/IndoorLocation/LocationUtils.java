@@ -1,6 +1,14 @@
 package com.arlab.blindnav.android.util.IndoorLocation;
 
+import java.util.ArrayList;
+
 public class LocationUtils {
+
+    private static ArrayList<Double> getIndoorLocationCoordinates() {
+        ArrayList<Double> locationCoordinates = new ArrayList<>();
+
+        return locationCoordinates;
+    }
 
     //  get distance between the device and BLE beacon
     private static double getDistance(double txPower, double rssi) {

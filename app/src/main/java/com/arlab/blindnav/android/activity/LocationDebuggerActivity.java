@@ -38,12 +38,10 @@ import java.util.List;
 public class LocationDebuggerActivity extends AppCompatActivity {
 
     String TAG = "ScanActivity";
-
     BluetoothAdapter mBluetoothAdapter;
     BluetoothGatt mBluetoothGatt;
     BluetoothLeScanner scanner;
     ScanSettings scanSettings;
-
 
     private List<String> scannedDeivcesList;
     private ArrayAdapter<String> adapter;
@@ -56,54 +54,41 @@ public class LocationDebuggerActivity extends AppCompatActivity {
 
 
     @Override
-    protected void onCreate( Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location_debugger);
 
-        ArrayList<Double> coordinates001 = new ArrayList<Double>(){{
+        ArrayList<Double> coordinates001 = new ArrayList<Double>() {{
             add(-19.6685);
             add(-69.1942);
         }};
-        ArrayList<Double> coordinates002 = new ArrayList<Double>(){{
+        ArrayList<Double> coordinates002 = new ArrayList<Double>() {{
             add(-20.2705);
             add(-70.1311);
         }};
-        ArrayList<Double> coordinates003 = new ArrayList<Double>(){{
+        ArrayList<Double> coordinates003 = new ArrayList<Double>() {{
             add(-20.5656);
             add(-70.1807);
         }};
-        coordinatesMap.put("D3:FC:9B:90:18:13",coordinates001);
-        coordinatesMap.put("ED:0F:E2:55:4F:F2",coordinates002);
-        coordinatesMap.put("FB:A7:68:D0:2B:B1",coordinates003);
+        coordinatesMap.put("D3:FC:9B:90:18:13", coordinates001);
+        coordinatesMap.put("ED:0F:E2:55:4F:F2", coordinates002);
+        coordinatesMap.put("FB:A7:68:D0:2B:B1", coordinates003);
 
         devicesList = (ListView) findViewById(R.id.devicesList);
 
         //Setup list on device click listener
         setupListClickListener();
 
-        //Inicialize de devices list
+        //Initialize de devices list
         scannedDeivcesList = new ArrayList<>();
 
-        //Inicialize the list adapter for the listview with params: Context / Layout file / TextView ID in layout file / Devices list
+        //Initialize the list adapter for the listview with params: Context / Layout file / TextView ID in layout file / Devices list
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, android.R.id.text1, scannedDeivcesList);
 
         //Set the adapter to the listview
         devicesList.setAdapter(adapter);
 
         this.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-//        assert ((AppCompatActivity)getActivity()).getSupportActionBar() != null;
-//        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-//
-//        SpannableString s = new SpannableString("Scan beacons");
-//
-//        s.setSpan(new com.accent_systems.ibkshelloworld.TypefaceSpan(this, "Khand-Bold.ttf"), 0, s.length(),
-//                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-//        s.setSpan(new ForegroundColorSpan(Color.parseColor("#3a3c3e")), 0, s.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
-//        setTitle(s);
-//
-//        ((AppCompatActivity)getActivity()).getSupportActionBar().setLogo(R.mipmap.ibks);
-//        getSupportActionBar().setDisplayUseLogoEnabled(true);
-//        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
 //        init Bluetooth adapter
         initBT();
@@ -149,9 +134,6 @@ public class LocationDebuggerActivity extends AppCompatActivity {
                     if (status == BluetoothGatt.GATT_SUCCESS) {
                         //READ WAS SUCCESSFUL
                         Log.i(TAG, "ON CHARACTERISTIC READ SUCCESSFUL");
-                        //Read characteristic value like:
-                        //characteristic.getValue();
-                        //Which it returns a byte array. Convert it to HEX. string.
                     } else {
                         Log.i(TAG, "ERROR READING CHARACTERISTIC");
                     }
@@ -172,19 +154,12 @@ public class LocationDebuggerActivity extends AppCompatActivity {
                 @Override
                 public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
                     Log.i(TAG, "NEW NOTIFICATION RECEIVED");
-                    //New notification received. Check the characteristic it comes from and parse to string
-                    /*if(characteristic.getUuid().toString().contains("0000fff3")){
-                        characteristic.getValue();
-                    }*/
                 }
 
                 //RSSI values from the connection with the remote device are received here
                 @Override
                 public void onReadRemoteRssi(BluetoothGatt gatt, int rssi, int status) {
                     Log.i(TAG, "NEW RSSI VALUE RECEIVED");
-                    //Read remote RSSI like: mBluetoothGatt.readRemoteRssi();
-                    //Here you get the gatt table where the rssi comes from, the rssi value and the
-                    //status of the task.
                 }
             };
 
@@ -195,10 +170,10 @@ public class LocationDebuggerActivity extends AppCompatActivity {
 
         // Loop through available GATT Services.
         for (BluetoothGattService gattService : gattServices) {
-            Log.i(TAG, "SERVICE FOUND: "+gattService.getUuid().toString());
+            Log.i(TAG, "SERVICE FOUND: " + gattService.getUuid().toString());
             //Loop through available characteristics for each service
             for (BluetoothGattCharacteristic gattCharacteristic : gattService.getCharacteristics()) {
-                Log.i(TAG, "  CHAR. FOUND: "+gattCharacteristic.getUuid().toString());
+                Log.i(TAG, "  CHAR. FOUND: " + gattCharacteristic.getUuid().toString());
             }
         }
 
@@ -219,7 +194,7 @@ public class LocationDebuggerActivity extends AppCompatActivity {
             //Scanning parameters FILTER / SETTINGS / RESULT CALLBACK. Filter are used to define a particular
             //device to scan for. The Callback is defined above as a method.
             scanner.startScan(null, scanSettings, mScanCallback);
-        }else{
+        } else {
             //Stop scan
             scanner.stopScan(mScanCallback);
         }
@@ -237,27 +212,27 @@ public class LocationDebuggerActivity extends AppCompatActivity {
             //Convert advertising bytes to string for a easier parsing. GetBytes may return a NullPointerException. Treat it right(try/catch).
             String advertisingString = byteArrayToHex(result.getScanRecord().getBytes());
             //Print the advertising String in the LOG with other device info (ADDRESS - RSSI - ADVERTISING - NAME)
-            Log.i(TAG, result.getDevice().getAddress()+" - RSSI: "+result.getRssi()+"\t - "+advertisingString+" - "+result.getDevice().getName());
+            Log.i(TAG, result.getDevice().getAddress() + " - RSSI: " + result.getRssi() + "\t - " + advertisingString + " - " + result.getDevice().getName());
 
             //Check if scanned device is already in the list by mac address
             boolean contains = false;
-            for(int i=0; i<scannedDeivcesList.size(); i++){
-                if(scannedDeivcesList.get(i).contains(result.getDevice().getAddress())){
+            for (int i = 0; i < scannedDeivcesList.size(); i++) {
+                if (scannedDeivcesList.get(i).contains(result.getDevice().getAddress())) {
                     //Device already added
                     contains = true;
                     rssiArray[i] = getDistance(-57, result.getRssi());
 //                    lat_val.setText(" " + getDistance(-57, result.getRssi()));
                     //Replace the device with updated values in that position
-                    scannedDeivcesList.set(i, result.getRssi()+"  "+result.getDevice().getName()+ "\n       ("+result.getDevice().getAddress()+")");
+                    scannedDeivcesList.set(i, result.getRssi() + "  " + result.getDevice().getName() + "\n       (" + result.getDevice().getAddress() + ")");
                     coordinatesMap.get(result.getDevice().getAddress()).set(2, (getDistance(-57, result.getRssi())));
                     calculateLocation();
                     break;
                 }
             }
 
-            if(!contains){
+            if (!contains) {
                 //Scanned device not found in the list. NEW => add to list
-                scannedDeivcesList.add(result.getRssi()+"  "+result.getDevice().getName()+ "\n ("+result.getDevice().getAddress()+")");
+                scannedDeivcesList.add(result.getRssi() + "  " + result.getDevice().getName() + "\n (" + result.getDevice().getAddress() + ")");
                 coordinatesMap.get(result.getDevice().getAddress()).add(getDistance(-57, result.getRssi()));
             }
 
@@ -278,14 +253,14 @@ public class LocationDebuggerActivity extends AppCompatActivity {
         ArrayList<Double> p_1 = coordinatesMap.get("D3:FC:9B:90:18:13");
         ArrayList<Double> p_2 = coordinatesMap.get("ED:0F:E2:55:4F:F2");
         ArrayList<Double> p_3 = coordinatesMap.get("FB:A7:68:D0:2B:B1");
-        Point p1=new Point(p_1.get(0),p_1.get(1),p_1.get(2));
-        Point p2=new Point(p_2.get(0),p_2.get(1),p_2.get(2));
-        Point p3=new Point(p_3.get(0),p_3.get(1),p_3.get(2));
-        if (p1.gr() !=0 && p2.gr() !=0 && p3.gr() !=0){
-            double[] a= Trilateration.Compute(p1,p2,p3);
-            if(a != null){
-                lat_val.setText(" "+a[0]);
-                lon_val.setText(" "+a[1]);
+        Point p1 = new Point(p_1.get(0), p_1.get(1), p_1.get(2));
+        Point p2 = new Point(p_2.get(0), p_2.get(1), p_2.get(2));
+        Point p3 = new Point(p_3.get(0), p_3.get(1), p_3.get(2));
+        if (p1.gr() != 0 && p2.gr() != 0 && p3.gr() != 0) {
+            double[] a = Trilateration.Compute(p1, p2, p3);
+            if (a != null) {
+                lat_val.setText(" " + a[0]);
+                lon_val.setText(" " + a[1]);
             }
 
         }
@@ -301,7 +276,7 @@ public class LocationDebuggerActivity extends AppCompatActivity {
 //        }
     }
 
-    private double getDistance(double txPower, double rssi){
+    private double getDistance(double txPower, double rssi) {
         if (rssi == 0) {
             return -1; // if we cannot determine accuracy, return -1.
         }
@@ -316,13 +291,13 @@ public class LocationDebuggerActivity extends AppCompatActivity {
     //Method to convert a byte array to a HEX. string.
     private String byteArrayToHex(byte[] a) {
         StringBuilder sb = new StringBuilder(a.length * 2);
-        for(byte b: a)
+        for (byte b : a)
             sb.append(String.format("%02x", b & 0xff));
         return sb.toString();
     }
 
-    private void initBT(){
-        final BluetoothManager bluetoothManager =  (BluetoothManager) this.getSystemService(Context.BLUETOOTH_SERVICE);
+    private void initBT() {
+        final BluetoothManager bluetoothManager = (BluetoothManager) this.getSystemService(Context.BLUETOOTH_SERVICE);
         mBluetoothAdapter = bluetoothManager.getAdapter();
 
         //Create the scan settings
@@ -335,7 +310,7 @@ public class LocationDebuggerActivity extends AppCompatActivity {
         scanner = mBluetoothAdapter.getBluetoothLeScanner();
     }
 
-    void setupListClickListener(){
+    void setupListClickListener() {
         devicesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -346,19 +321,19 @@ public class LocationDebuggerActivity extends AppCompatActivity {
                 //Get the string from the item clicked
                 String fullString = scannedDeivcesList.get(position);
                 //Get only the address from the previous string. Substring from '(' to ')'
-                String address = fullString.substring(fullString.indexOf("(")+1, fullString.indexOf(")"));
+                String address = fullString.substring(fullString.indexOf("(") + 1, fullString.indexOf(")"));
                 //Get BLE device with address
                 BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
                 //******************************
                 //START CONNECTION WITH DEVICE AND DECLARE GATT
                 //******************************
-                Log.i(TAG,"*************************************************");
-                Log.i(TAG, "CONNECTION STARTED TO DEVICE "+address);
-                Log.i(TAG,"*************************************************");
+                Log.i(TAG, "*************************************************");
+                Log.i(TAG, "CONNECTION STARTED TO DEVICE " + address);
+                Log.i(TAG, "*************************************************");
 
                 //ConnectGatt parameters are CONTEXT / AUTOCONNECT to connect the next time it is scanned / GATT CALLBACK to receive GATT notifications and data
                 // Note: On Samsung devices, the connection must be done on main thread
-                mBluetoothGatt = device.connectGatt(LocationDebuggerActivity.this,false, mGattCallback);
+                mBluetoothGatt = device.connectGatt(LocationDebuggerActivity.this, false, mGattCallback);
 
                 /*
                 There is also another simplest way to connect to a device. If you already stored
