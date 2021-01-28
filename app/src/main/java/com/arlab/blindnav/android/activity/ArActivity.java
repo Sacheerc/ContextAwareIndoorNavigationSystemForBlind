@@ -1,5 +1,6 @@
 package com.arlab.blindnav.android.activity;
 
+import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothManager;
@@ -8,9 +9,11 @@ import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanResult;
 import android.bluetooth.le.ScanSettings;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.hardware.SensorManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.speech.SpeechRecognizer;
 import android.util.Log;
 import android.view.WindowManager;
 import android.webkit.WebView;
@@ -19,6 +22,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
 import com.arlab.blindnav.R;
 import com.arlab.blindnav.android.util.ArchitectJavaScriptListener;
 import com.arlab.blindnav.android.util.CameraConfig;
@@ -116,6 +122,7 @@ public class ArActivity extends AppCompatActivity{
     initBT();
     //Start scan of bluetooth devices
     startLeScan(true);
+
   }
 
   private void initBT() {
