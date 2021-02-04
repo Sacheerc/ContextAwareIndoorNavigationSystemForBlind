@@ -35,6 +35,9 @@ import com.arlab.blindnav.android.util.location.LocationChangesListener;
 import com.arlab.blindnav.android.util.location.LocationUtils;
 import com.arlab.blindnav.data.DataProvider;
 import com.indooratlas.android.sdk._internal.i3;
+import com.vikramezhil.droidspeech.DroidSpeech;
+import com.vikramezhil.droidspeech.OnDSListener;
+import com.vikramezhil.droidspeech.OnDSPermissionsListener;
 import com.wikitude.architect.ArchitectStartupConfiguration;
 import com.wikitude.architect.ArchitectView;
 
@@ -43,7 +46,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class ArActivity extends AppCompatActivity{
+public class ArActivity extends AppCompatActivity implements OnDSListener{
 
   private static final String TAG = ArActivity.class.getSimpleName();
   private static final String AR_EXPERIENCE = "index.html";
@@ -61,7 +64,7 @@ public class ArActivity extends AppCompatActivity{
   private List<String> scannedDevicesList;
   private ArrayAdapter<String> adapter;
   private TextView lat_val, lon_val;
-  private double[] rssiArray = {0, 0, 0};
+  private double[] rssiArray = {0, 0, 0, 0};
   private HashMap<String, ArrayList<Double>> coordinatesMap = new HashMap<String, ArrayList<Double>>();
 
   /**
@@ -83,20 +86,26 @@ public class ArActivity extends AppCompatActivity{
     super.onCreate(savedInstanceState);
 
     ArrayList<Double> coordinates001 = new ArrayList<Double>() {{
-      add(-19.6685);
-      add(-69.1942);
+      add(7.135360);
+      add(79.912403);
     }};
     ArrayList<Double> coordinates002 = new ArrayList<Double>() {{
-      add(-20.2705);
-      add(-70.1311);
+      add(7.135325);
+      add(79.912365);
     }};
     ArrayList<Double> coordinates003 = new ArrayList<Double>() {{
-      add(-20.5656);
-      add(-70.1807);
+      add(7.135363);
+      add(79.912352);
+    }};
+
+    ArrayList<Double> coordinates004 = new ArrayList<Double>() {{
+      add(7.135396);
+      add(79.912389);
     }};
     coordinatesMap.put("D3:FC:9B:90:18:13", coordinates001);
     coordinatesMap.put("ED:0F:E2:55:4F:F2", coordinates002);
     coordinatesMap.put("FB:A7:68:D0:2B:B1", coordinates003);
+    coordinatesMap.put("F1:DA:2D:5D:9C:86", coordinates004);
     scannedDevicesList = new ArrayList<>();
 
     WebView.setWebContentsDebuggingEnabled(true);
@@ -117,11 +126,15 @@ public class ArActivity extends AppCompatActivity{
 
     javaScriptListener = new ArchitectJavaScriptListener(this, architectView);
     javaScriptListener.onCreate();
+    DroidSpeech droidSpeech = new DroidSpeech(this, null);
+    droidSpeech.setOnDroidSpeechListener(this);
+    droidSpeech.startDroidSpeechRecognition();
 
     //init Bluetooth adapter
     initBT();
     //Start scan of bluetooth devices
     startLeScan(true);
+
 
   }
 
@@ -163,7 +176,7 @@ public class ArActivity extends AppCompatActivity{
 
       if (!contains) {
         scannedDevicesList.add(result.getRssi() + "  " + result.getDevice().getName() + "\n (" + result.getDevice().getAddress() + ")");
-        coordinatesMap.get(result.getDevice().getAddress()).add(getDistance(-57, result.getRssi()));
+        coordinatesMap.get(result.getDevice().getAddress()).add(getDistance(-57, result.getRssi())/1000);
       }
 //      runOnUiThread(new Runnable() {
 //        @Override
@@ -179,13 +192,14 @@ public class ArActivity extends AppCompatActivity{
       ArrayList<Double> p_1 = coordinatesMap.get("D3:FC:9B:90:18:13");
       ArrayList<Double> p_2 = coordinatesMap.get("ED:0F:E2:55:4F:F2");
       ArrayList<Double> p_3 = coordinatesMap.get("FB:A7:68:D0:2B:B1");
-
       Point p1 = new Point(p_1.get(0), p_1.get(1), p_1.get(2));
       Point p2 = new Point(p_2.get(0), p_2.get(1), p_2.get(2));
       Point p3 = new Point(p_3.get(0), p_3.get(1), p_3.get(2));
       if (p1.gr() != 0 && p2.gr() != 0 && p3.gr() != 0) {
         double[] a = Trilateration.Compute(p1, p2, p3);
-        architectView.setLocation(a[0], a[1], ALTITUDE_CONST, 100);
+        if(a != null){
+          architectView.setLocation(a[0], a[1], ALTITUDE_CONST, 100);
+        }
       }
     }
   }
@@ -253,6 +267,36 @@ public class ArActivity extends AppCompatActivity{
     architectView.clearCache();
     architectView.onDestroy();
     super.onDestroy();
+  }
+
+  @Override
+  public void onDroidSpeechSupportedLanguages(String currentSpeechLanguage, List<String> supportedSpeechLanguages) {
+
+  }
+
+  @Override
+  public void onDroidSpeechRmsChanged(float rmsChangedValue) {
+
+  }
+
+  @Override
+  public void onDroidSpeechLiveResult(String liveSpeechResult) {
+    Log.i(TAG, "Live speech result = " + liveSpeechResult);
+  }
+
+  @Override
+  public void onDroidSpeechFinalResult(String finalSpeechResult) {
+
+  }
+
+  @Override
+  public void onDroidSpeechClosedByUser() {
+
+  }
+
+  @Override
+  public void onDroidSpeechError(String errorMsg) {
+
   }
 
 //  @Override
