@@ -6,7 +6,7 @@ const clear = '';
 
 /* Implementation of AR-Experience (aka "World"). */
 let World = {
-    maxRangeMeters: 200,
+    maxRangeMeters: 50,
     minScalingDistance: 10,
     scalingFactor: 0.25,
     userLocation: null,

@@ -11,7 +11,6 @@ import android.bluetooth.le.ScanSettings;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.hardware.SensorManager;
-import android.location.Location;
 import android.os.Bundle;
 import android.speech.SpeechRecognizer;
 import android.util.Log;
@@ -35,11 +34,21 @@ import com.arlab.blindnav.android.util.location.LocationChangesListener;
 import com.arlab.blindnav.android.util.location.LocationUtils;
 import com.arlab.blindnav.data.DataProvider;
 import com.indooratlas.android.sdk._internal.i3;
+import com.nexenio.bleindoorpositioning.IndoorPositioning;
+import com.nexenio.bleindoorpositioning.ble.advertising.AdvertisingPacket;
+import com.nexenio.bleindoorpositioning.ble.beacon.Beacon;
+import com.nexenio.bleindoorpositioning.ble.beacon.BeaconUpdateListener;
+import com.nexenio.bleindoorpositioning.ble.beacon.IBeacon;
+import com.nexenio.bleindoorpositioning.location.LocationListener;
+import com.nexenio.bleindoorpositioning.location.provider.IBeaconLocationProvider;
+import com.nexenio.bleindoorpositioning.location.provider.LocationProvider;
 import com.vikramezhil.droidspeech.DroidSpeech;
 import com.vikramezhil.droidspeech.OnDSListener;
 import com.vikramezhil.droidspeech.OnDSPermissionsListener;
 import com.wikitude.architect.ArchitectStartupConfiguration;
 import com.wikitude.architect.ArchitectView;
+import com.nexenio.bleindoorpositioning.ble.beacon.BeaconManager;
+import com.nexenio.bleindoorpositioning.location.Location;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -61,6 +70,7 @@ public class ArActivity extends AppCompatActivity implements OnDSListener{
   BluetoothGatt mBluetoothGatt;
   BluetoothLeScanner scanner;
   ScanSettings scanSettings;
+  DroidSpeech droidSpeech;
   private List<String> scannedDevicesList;
   private ArrayAdapter<String> adapter;
   private TextView lat_val, lon_val;
@@ -126,14 +136,33 @@ public class ArActivity extends AppCompatActivity implements OnDSListener{
 
     javaScriptListener = new ArchitectJavaScriptListener(this, architectView);
     javaScriptListener.onCreate();
-    DroidSpeech droidSpeech = new DroidSpeech(this, null);
-    droidSpeech.setOnDroidSpeechListener(this);
-    droidSpeech.startDroidSpeechRecognition();
+//    droidSpeech = new DroidSpeech(this, null);
+//    droidSpeech.setOnDroidSpeechListener(this);
+//    droidSpeech.startDroidSpeechRecognition();
 
     //init Bluetooth adapter
     initBT();
     //Start scan of bluetooth devices
     startLeScan(true);
+    BeaconManager.registerBeaconUpdateListener(new BeaconUpdateListener() {
+      @Override
+      public void onBeaconUpdated(Beacon beacon) {
+        // have fun with your beacon!
+
+//        Log.i("Distance",Float.toString(beacon.getDistance()));
+//        Toast.makeText(ArActivity.this, beacon.getMacAddress(), Toast.LENGTH_LONG).show();
+      }
+    });
+
+    IndoorPositioning.registerLocationListener(new LocationListener() {
+      @Override
+      public void onLocationUpdated(LocationProvider locationProvider, Location location) {
+        // have fun with your location!
+        Log.i(TAG, Double.toString(location.getLatitude()));
+//        architectView.setLocation(location.getLatitude(), location.getLongitude(), ALTITUDE_CONST, 100);
+        architectView.setLocation(7.135331, 79.912376, ALTITUDE_CONST, 100);
+      }
+    });
 
 
   }
@@ -159,31 +188,20 @@ public class ArActivity extends AppCompatActivity implements OnDSListener{
     @Override
     public void onScanResult(int callbackType, ScanResult result) {
       super.onScanResult(callbackType, result);
-      String advertisingString = byteArrayToHex(result.getScanRecord().getBytes());
-//      Log.i(TAG, result.getDevice().getAddress() + " - RSSI: " + result.getRssi() + "\t - " + advertisingString + " - " + result.getDevice().getName());
-
-      boolean contains = false;
-      for (int i = 0; i < scannedDevicesList.size(); i++) {
-        if (scannedDevicesList.get(i).contains(result.getDevice().getAddress())) {
-          contains = true;
-          rssiArray[i] = getDistance(-57, result.getRssi());
-          scannedDevicesList.set(i, result.getRssi() + "  " + result.getDevice().getName() + "\n       (" + result.getDevice().getAddress() + ")");
-          coordinatesMap.get(result.getDevice().getAddress()).set(2, (getDistance(-57, result.getRssi())));
-          calculateLocation();
-          break;
+      String macAddress = result.getDevice().getAddress();
+      byte[] advertisingData = result.getScanRecord().getBytes();
+      int rssi = result.getRssi();
+//      if(macAddress.equalsIgnoreCase("D3:FC:9B:90:18:13")) {
+//        Log.i("Distance",Float.toString((float) getDistance(-57, rssi)));
+//        Toast.makeText(ArActivity.this, Float.toString((float) getDistance(-57, rssi)), Toast.LENGTH_LONG).show();
+//      }
+      AdvertisingPacket advertisingPacket = BeaconManager.processAdvertisingData(macAddress, advertisingData, rssi);
+      if (advertisingPacket != null) {
+        Beacon beacon = BeaconManager.getBeacon(macAddress, advertisingPacket);
+        if (beacon instanceof IBeacon && !beacon.hasLocation()) {
+          beacon.setLocationProvider(createDebuggingLocationProvider((IBeacon) beacon));
         }
       }
-
-      if (!contains) {
-        scannedDevicesList.add(result.getRssi() + "  " + result.getDevice().getName() + "\n (" + result.getDevice().getAddress() + ")");
-        coordinatesMap.get(result.getDevice().getAddress()).add(getDistance(-57, result.getRssi())/1000);
-      }
-//      runOnUiThread(new Runnable() {
-//        @Override
-//        public void run() {
-//          adapter.notifyDataSetChanged();
-//        }
-//      });
     }
   };
 
@@ -202,6 +220,47 @@ public class ArActivity extends AppCompatActivity implements OnDSListener{
         }
       }
     }
+  }
+
+  private static IBeaconLocationProvider<IBeacon> createDebuggingLocationProvider(IBeacon iBeacon) {
+    final Location beaconLocation = new Location();
+    switch (iBeacon.getMinor()) {
+      case 5: {
+        beaconLocation.setLatitude(7.135360);
+        beaconLocation.setLongitude(79.912403);
+        beaconLocation.setAltitude(36);
+        break;
+      }
+      case 6: {
+        beaconLocation.setLatitude(7.135325);
+        beaconLocation.setLongitude(79.912365);
+        beaconLocation.setAltitude(36);
+        break;
+      }
+      case 7: {
+        beaconLocation.setLatitude(7.135363);
+        beaconLocation.setLongitude(79.912352);
+        beaconLocation.setAltitude(36);
+        break;
+      }
+      case 8: {
+        beaconLocation.setLatitude(7.135396);
+        beaconLocation.setLongitude(79.912389);
+        beaconLocation.setAltitude(36);
+        break;
+      }
+    }
+    return new IBeaconLocationProvider<IBeacon>(iBeacon) {
+      @Override
+      protected void updateLocation() {
+        this.location = beaconLocation;
+      }
+
+      @Override
+      protected boolean canUpdateLocation() {
+        return true;
+      }
+    };
   }
 
 

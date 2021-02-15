@@ -73,4 +73,5 @@ dependencies {
     implementation 'com.davemorrissey.labs:subsampling-scale-image-view:3.2.0'
     implementation "com.indooratlas.android:indooratlas-android-sdk:3.3.6@aar"
     implementation "com.github.vikramezhil:DroidSpeech:v2.0.3"
+    implementation 'com.nexenio.bleindoorpositioning:core:0.4.0'
 }

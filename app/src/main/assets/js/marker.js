@@ -68,10 +68,12 @@ function Marker(poiData) {
             }
         });
 
-    let numbers = "Rooms: " + poiData.rooms;
-    if ("floor" in poiData) {
-        numbers = numbers + " / Floor: " + poiData.floor;
-    }
+//    let numbers = "Rooms: " + poiData.rooms;
+//    if ("floor" in poiData) {
+//        numbers = numbers + " / Floor: " + poiData.floor;
+//    }
+
+    let numbers = "Floor: " + poiData.floor;
 
     this.numbersLabel = new AR.Label(numbers, 0.3, {
         zOrder: 1,
@@ -129,8 +131,7 @@ function Marker(poiData) {
     this.radardrawablesSelected = [];
     this.radardrawablesSelected.push(this.radarCircleSelected);
 
-    let cam = [this.markerDrawableIdle, this.markerDrawableSelected, this.titleLabels[0],
-        this.priceLabel, this.numbersLabel, this.distanceLabel];
+    let cam = [this.markerDrawableIdle, this.markerDrawableSelected, this.titleLabels[0], this.numbersLabel, this.distanceLabel];
     if(this.titleLabels.length === 2) {
         cam.push(this.titleLabels[1]);
     }
