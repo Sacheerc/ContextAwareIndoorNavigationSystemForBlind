@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".android.activity.FeedBackTest">
+
+    <Button
+        android:id="@+id/leftbtn"
+        android:layout_width="178dp"
+        android:layout_height="61dp"
+        android:layout_marginTop="100dp"
+        android:text="Left"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/sleftbtn"
+        android:layout_width="178dp"
+        android:layout_height="61dp"
+        android:layout_marginTop="24dp"
+        android:text="Slight Left"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/leftbtn" />
+
+    <Button
+        android:id="@+id/frontbtn"
+        android:layout_width="178dp"
+        android:layout_height="61dp"
+        android:layout_marginTop="24dp"
+        android:text="Go Front"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.502"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/sleftbtn" />
+
+    <Button
+        android:id="@+id/srightbtn"
+        android:layout_width="178dp"
+        android:layout_height="61dp"
+        android:layout_marginTop="24dp"
+        android:text="Slight Right"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/frontbtn" />
+
+    <Button
+        android:id="@+id/rightbtn"
+        android:layout_width="178dp"
+        android:layout_height="61dp"
+        android:layout_marginTop="24dp"
+        android:text="Right"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/srightbtn" />
+
+    <Button
+        android:id="@+id/allbtn"
+        android:layout_width="178dp"
+        android:layout_height="61dp"
+        android:layout_marginTop="60dp"
+        android:text="destination"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rightbtn" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

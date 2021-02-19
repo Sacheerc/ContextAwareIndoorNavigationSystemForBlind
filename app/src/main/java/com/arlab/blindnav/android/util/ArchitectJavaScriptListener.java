@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.widget.Toast;
 import com.arlab.blindnav.R;
+import com.arlab.blindnav.android.activity.FeedBackTest;
 import com.arlab.blindnav.android.activity.FingerprintCollectorActivity;
 import com.arlab.blindnav.android.activity.LocationDebuggerActivity;
 import com.arlab.blindnav.android.activity.OfferDetailActivity;
@@ -56,6 +57,11 @@ public class ArchitectJavaScriptListener extends ArchitectViewExtension implemen
         case "open_way_finder": {
           Intent wayFindingActivity = new Intent(activity, WayFindingActivity.class);
           activity.startActivity(wayFindingActivity);
+          break;
+        }
+        case "open_feedback_test": {
+          Intent feedbackTest = new Intent(activity, FeedBackTest.class);
+          activity.startActivity(feedbackTest);
           break;
         }
         case "places_labels_get": {

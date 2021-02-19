@@ -171,6 +171,13 @@ let World = {
                 AR.platform.sendJSONObject(JSONcall);
             },
 
+    openFeedbackTester: function openFeedbackTesterFn() {
+                   const JSONcall = {
+                       action: "open_feedback_test"
+                   };
+                   AR.platform.sendJSONObject(JSONcall);
+               },
+
     /* This is called from Native Android code after the World.getPlacesLabelCall() to receive the addresses of the offers. */
     onPlacesAddressesReceived: function onPlacesAddressesReceivedFn(text) {
         const json = JSON.parse(text);

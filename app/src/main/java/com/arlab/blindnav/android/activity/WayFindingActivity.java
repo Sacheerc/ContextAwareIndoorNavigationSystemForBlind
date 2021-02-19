@@ -43,6 +43,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -430,7 +431,7 @@ public class WayFindingActivity extends AppCompatActivity implements GoogleMap.O
             return false;
         }
 
-        final double FINISH_THRESHOLD_METERS = 8.0;
+        final double FINISH_THRESHOLD_METERS = 1.0;
         double routeLength = 0;
         for (IARoute.Leg leg : route.getLegs()) routeLength += leg.getLength();
         return routeLength < FINISH_THRESHOLD_METERS;
@@ -458,7 +459,8 @@ public class WayFindingActivity extends AppCompatActivity implements GoogleMap.O
         }
 
         for (IARoute.Leg leg : mCurrentRoute.getLegs()) {
-
+            Log.i("leg", leg.toString());
+            Toast.makeText(WayFindingActivity.this, leg.toString(), Toast.LENGTH_LONG).show();
             if (leg.getEdgeIndex() == null) {
                 // Legs without an edge index are, in practice, the last and first legs of the
                 // route. They connect the destination or current location to the routing graph.

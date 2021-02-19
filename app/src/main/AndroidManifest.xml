@@ -41,6 +41,8 @@
         android:roundIcon="@drawable/ar_real_estate_incon"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".android.activity.FeedBackTest"></activity>
+
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
@@ -53,7 +55,8 @@
         <meta-data
             android:name="com.indooratlas.android.sdk.API_SECRET"
             android:value="@string/indooratlas_api_secret" />
-        <activity android:name=".android.activity.WayFindingActivity"></activity>
+
+        <activity android:name=".android.activity.WayFindingActivity" />
         <activity android:name=".android.activity.FingerprintCollectorActivity" />
         <activity android:name=".android.activity.LocationDebuggerActivity" />
         <activity android:name=".android.activity.MainActivity">
