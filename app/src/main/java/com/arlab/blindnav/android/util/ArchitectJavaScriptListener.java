@@ -2,6 +2,7 @@ package com.arlab.blindnav.android.util;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.speech.tts.TextToSpeech;
 import android.widget.Toast;
 import com.arlab.blindnav.R;
 import com.arlab.blindnav.android.activity.FeedBackTest;
@@ -18,14 +19,26 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class ArchitectJavaScriptListener extends ArchitectViewExtension implements ArchitectJavaScriptInterfaceListener {
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Locale;
 
+public class ArchitectJavaScriptListener extends ArchitectViewExtension implements ArchitectJavaScriptInterfaceListener {
+  TextToSpeech tts;
   public ArchitectJavaScriptListener(Activity activity, ArchitectView architectView) {
     super(activity, architectView);
   }
 
   @Override
   public void onCreate() {
+    tts=new TextToSpeech(activity.getApplicationContext(), new TextToSpeech.OnInitListener() {
+      @Override
+      public void onInit(int status) {
+        if(status != TextToSpeech.ERROR) {
+          tts.setLanguage(Locale.UK);
+        }
+      }
+    });
     architectView.addArchitectJavaScriptInterfaceListener(this);
   }
 
@@ -81,6 +94,17 @@ public class ArchitectJavaScriptListener extends ArchitectViewExtension implemen
           JSONObject userItem = new JSONObject();
           userItem.put("address", new DataProvider(activity).getUserAddressLine());
           architectView.callJavascript("panelSetUserAddress('" + userItem + "')");
+          break;
+        }
+        case "getContext": {
+          JSONArray array = jsonObject.getJSONArray("context");
+          tts.speak("These are the nearby landmarks. Please select one as the destination.", TextToSpeech.QUEUE_ADD, null);
+          for (int i =0; i<array.length(); i++) {
+            JSONObject object = array.getJSONObject(i).getJSONObject("poiData");
+            String title =object.getString("title");
+            tts.speak(title, TextToSpeech.QUEUE_ADD, null);
+          }
+//          Toast.makeText(activity, String.valueOf(len), Toast.LENGTH_LONG).show();
           break;
         }
         default: break;

@@ -6,10 +6,12 @@ import com.google.android.material.snackbar.Snackbar;
 
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.speech.tts.TextToSpeech;
 import android.view.View;
 import android.widget.Button;
 
 import java.io.IOException;
+import java.util.Locale;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -18,10 +20,21 @@ import okhttp3.Response;
 public class FeedBackTest extends AppCompatActivity {
     private OkHttpClient client = new OkHttpClient();
     private Button leftBtn, rightBtn, slightRightBtn, frontBtn, slightLeftBtn, allBtn;
+    TextToSpeech tts;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+
+        tts=new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if(status != TextToSpeech.ERROR) {
+                    tts.setLanguage(Locale.UK);
+                }
+            }
+        });
+
         setContentView(R.layout.activity_feed_back_test);
         leftBtn = (Button) findViewById(R.id.leftbtn);
         rightBtn = (Button) findViewById(R.id.rightbtn);
@@ -36,36 +49,42 @@ public class FeedBackTest extends AppCompatActivity {
 
         leftBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                tts.speak("Turn left", TextToSpeech.QUEUE_FLUSH, null);
                 generateFeedback(v, "left");
             }
         });
 
         rightBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                tts.speak("Turn right", TextToSpeech.QUEUE_FLUSH, null);
                 generateFeedback(v, "right");
             }
         });
 
         slightLeftBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                tts.speak("Slightly Turn left", TextToSpeech.QUEUE_FLUSH, null);
                 generateFeedback(v, "sleft");
             }
         });
 
         slightRightBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                tts.speak("Slightly Turn right", TextToSpeech.QUEUE_FLUSH, null);
                 generateFeedback(v, "sright");
             }
         });
 
         frontBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                tts.speak("Go front", TextToSpeech.QUEUE_FLUSH, null);
                 generateFeedback(v, "front");
             }
         });
 
         allBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                tts.speak("Destination Reached", TextToSpeech.QUEUE_FLUSH, null);
                 generateFeedback(v, "all");
             }
         });
@@ -91,5 +110,13 @@ public class FeedBackTest extends AppCompatActivity {
         try (Response response = client.newCall(request).execute()) {
             return response.body().string();
         }
+    }
+
+    public void onPause(){
+        if(tts !=null){
+            tts.stop();
+            tts.shutdown();
+        }
+        super.onPause();
     }
 }

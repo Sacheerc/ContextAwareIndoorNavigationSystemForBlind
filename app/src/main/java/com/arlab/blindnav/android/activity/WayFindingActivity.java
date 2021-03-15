@@ -69,6 +69,7 @@ public class WayFindingActivity extends AppCompatActivity implements GoogleMap.O
     private List<Marker> mPoIMarkers = new ArrayList<>();
     private List<Polyline> mPolylines = new ArrayList<>();
     private IARoute mCurrentRoute;
+    private double distance = 0;
 
     private IAWayfindingRequest mWayfindingDestination;
 
@@ -295,7 +296,7 @@ public class WayFindingActivity extends AppCompatActivity implements GoogleMap.O
                 mPoIMarkers.add(mMap.addMarker(new MarkerOptions()
                         .title(poi.getName())
                         .position(new LatLng(poi.getLocation().latitude, poi.getLocation().longitude))
-                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))));
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))));
             }
         }
     }
@@ -434,8 +435,14 @@ public class WayFindingActivity extends AppCompatActivity implements GoogleMap.O
         final double FINISH_THRESHOLD_METERS = 1.0;
         double routeLength = 0;
         for (IARoute.Leg leg : route.getLegs()) routeLength += leg.getLength();
+        if (Math.abs(routeLength-distance)> 1) {
+            Toast.makeText(WayFindingActivity.this, String.valueOf(routeLength), Toast.LENGTH_SHORT).show();
+            distance = routeLength;
+        }
         return routeLength < FINISH_THRESHOLD_METERS;
     }
+
+
 
     /**
      * Clear the visualizations for the wayfinding paths
@@ -460,7 +467,7 @@ public class WayFindingActivity extends AppCompatActivity implements GoogleMap.O
 
         for (IARoute.Leg leg : mCurrentRoute.getLegs()) {
             Log.i("leg", leg.toString());
-            Toast.makeText(WayFindingActivity.this, leg.toString(), Toast.LENGTH_LONG).show();
+//            Toast.makeText(WayFindingActivity.this, leg.toString(), Toast.LENGTH_LONG).show();
             if (leg.getEdgeIndex() == null) {
                 // Legs without an edge index are, in practice, the last and first legs of the
                 // route. They connect the destination or current location to the routing graph.

@@ -196,11 +196,18 @@ let World = {
 
     getNumberOfVisiblePlaces: function getNumberOfVisiblePlacesFn() {
         World.markerList.sort(World.sortByDistanceSorting);
+        contextData = [];
         for (let i = 0; i < World.markerList.length; i++) {
             if (World.markerList[i].distanceToUser > World.maxRangeMeters) {
+                const JSONcall = {action: "getContext", context: contextData };
+                AR.platform.sendJSONObject(JSONcall);
                 return i;
+            } else {
+                contextData.push(World.markerList[i]);
             }
         }
+        const JSONcall = {action: "getContext", context: contextData };
+        AR.platform.sendJSONObject(JSONcall);
         return World.markerList.length;
     },
 
