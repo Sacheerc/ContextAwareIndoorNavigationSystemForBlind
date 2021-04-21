@@ -112,10 +112,11 @@ public class FeedBackTest extends AppCompatActivity {
         }
     }
 
+
     public void onPause(){
         if(tts !=null){
             tts.stop();
-            tts.shutdown();
+//            tts.shutdown();
         }
         super.onPause();
     }

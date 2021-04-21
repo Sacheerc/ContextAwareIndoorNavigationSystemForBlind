@@ -9,10 +9,12 @@ import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanResult;
 import android.bluetooth.le.ScanSettings;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.speech.SpeechRecognizer;
+import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.WindowManager;
 import android.webkit.WebView;
@@ -54,6 +56,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 public class ArActivity extends AppCompatActivity implements OnDSListener{
 
@@ -69,6 +72,7 @@ public class ArActivity extends AppCompatActivity implements OnDSListener{
   BluetoothAdapter mBluetoothAdapter;
   BluetoothGatt mBluetoothGatt;
   BluetoothLeScanner scanner;
+  private boolean exit = false;
   ScanSettings scanSettings;
   DroidSpeech droidSpeech;
   private List<String> scannedDevicesList;
@@ -76,6 +80,7 @@ public class ArActivity extends AppCompatActivity implements OnDSListener{
   private TextView lat_val, lon_val;
   private double[] rssiArray = {0, 0, 0, 0};
   private HashMap<String, ArrayList<Double>> coordinatesMap = new HashMap<String, ArrayList<Double>>();
+  TextToSpeech tts;
 
   /**
    * The ArchitectView.SensorAccuracyChangeListener notifies of changes in the accuracy of the compass.
@@ -95,6 +100,15 @@ public class ArActivity extends AppCompatActivity implements OnDSListener{
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
+    tts=new TextToSpeech(this.getApplicationContext(), new TextToSpeech.OnInitListener() {
+      @Override
+      public void onInit(int status) {
+        if(status != TextToSpeech.ERROR) {
+          tts.setLanguage(Locale.UK);
+        }
+      }
+    });
+
     ArrayList<Double> coordinates001 = new ArrayList<Double>() {{
       add(7.135360);
       add(79.912403);
@@ -107,11 +121,11 @@ public class ArActivity extends AppCompatActivity implements OnDSListener{
       add(7.135363);
       add(79.912352);
     }};
-
     ArrayList<Double> coordinates004 = new ArrayList<Double>() {{
       add(7.135396);
       add(79.912389);
     }};
+
     coordinatesMap.put("D3:FC:9B:90:18:13", coordinates001);
     coordinatesMap.put("ED:0F:E2:55:4F:F2", coordinates002);
     coordinatesMap.put("FB:A7:68:D0:2B:B1", coordinates003);
@@ -136,14 +150,14 @@ public class ArActivity extends AppCompatActivity implements OnDSListener{
 
     javaScriptListener = new ArchitectJavaScriptListener(this, architectView);
     javaScriptListener.onCreate();
-//    droidSpeech = new DroidSpeech(this, null);
-//    droidSpeech.setOnDroidSpeechListener(this);
-//    droidSpeech.startDroidSpeechRecognition();
+    droidSpeech = new DroidSpeech(this, null);
+    droidSpeech.setOnDroidSpeechListener(this);
+    droidSpeech.startDroidSpeechRecognition();
 
     //init Bluetooth adapter
-    initBT();
+//    initBT();
     //Start scan of bluetooth devices
-    startLeScan(true);
+//    startLeScan(true);
     BeaconManager.registerBeaconUpdateListener(new BeaconUpdateListener() {
       @Override
       public void onBeaconUpdated(Beacon beacon) {
@@ -164,6 +178,7 @@ public class ArActivity extends AppCompatActivity implements OnDSListener{
       }
     });
 
+    architectView.setLocation(7.135331, 79.912376, ALTITUDE_CONST, 100);
 
   }
 
@@ -340,7 +355,28 @@ public class ArActivity extends AppCompatActivity implements OnDSListener{
 
   @Override
   public void onDroidSpeechLiveResult(String liveSpeechResult) {
+//    droidSpeech.closeDroidSpeechOperations();
     Log.i(TAG, "Live speech result = " + liveSpeechResult);
+    if(liveSpeechResult.equalsIgnoreCase("start")||liveSpeechResult.equalsIgnoreCase("star")){
+//      tts.speak("Showing nearby landmarks", TextToSpeech.QUEUE_ADD, null);
+      architectView.callJavascript("showPanel()");
+      exit = true;
+    } else if(exit){
+      tts.speak("Set destination to the exit.", TextToSpeech.QUEUE_ADD, null);
+      Intent wayFindingActivity = new Intent(this, WayFindingActivity.class);
+      this.startActivity(wayFindingActivity);
+      exit = false;
+    }
+//    if(liveSpeechResult.equalsIgnoreCase("exit")){
+//      tts.speak("Set destination to the exit.", TextToSpeech.QUEUE_ADD, null);
+//      Intent wayFindingActivity = new Intent(this, WayFindingActivity.class);
+//      this.startActivity(wayFindingActivity);
+//    }
+//    if(exit){
+//      tts.speak("Set destination to the exit.", TextToSpeech.QUEUE_ADD, null);
+//      Intent wayFindingActivity = new Intent(this, WayFindingActivity.class);
+//      this.startActivity(wayFindingActivity);
+//    }
   }
 
   @Override

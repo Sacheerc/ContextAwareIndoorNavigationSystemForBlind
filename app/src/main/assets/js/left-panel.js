@@ -35,7 +35,7 @@ function handlePanelMovements() {
 function panelAddPlaceToList(text) {
     let li = document.createElement('li');
     li.appendChild(document.createTextNode(text));
-    document.getElementById("lp-content-places").appendChild(li);
+//    document.getElementById("lp-content-places").appendChild(li);
 }
 
 function panelPopulateUserLocation() {
@@ -50,5 +50,5 @@ function panelPopulateUserLocation() {
 /* This is called from Native Android code after the World.updatePanelValues() to receive the user's current addresses. */
 function panelSetUserAddress(value) {
     const json = JSON.parse(value);
-    $("#lp-content-userlocation-address").html(json.address);
+//    $("#lp-content-userlocation-address").html(json.address);
 }

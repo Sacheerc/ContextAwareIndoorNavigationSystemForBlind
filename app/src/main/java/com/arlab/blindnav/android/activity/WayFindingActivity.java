@@ -41,20 +41,28 @@ import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.StrictMode;
+import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class WayFindingActivity extends AppCompatActivity implements GoogleMap.OnMapClickListener, OnMapReadyCallback {
 
     private static final String TAG = "IndoorAtlasExample";
-
+    TextToSpeech tts;
     /* used to decide when bitmap should be downscaled */
     private static final int MAX_DIMENSION = 2048;
-
+    private OkHttpClient client = new OkHttpClient();
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
 
     private Circle mCircle;
@@ -125,6 +133,9 @@ public class WayFindingActivity extends AppCompatActivity implements GoogleMap.O
             mCircle.setCenter(center);
             mHeadingMarker.setPosition(center);
             mCircle.setRadius(accuracyRadius);
+            LatLng pointTemp = new LatLng(7.135403,79.912424);
+            setWayfindingTarget(pointTemp, true);
+
         }
     }
 
@@ -165,7 +176,7 @@ public class WayFindingActivity extends AppCompatActivity implements GoogleMap.O
 
             // our camera position needs updating if location has significantly changed
             if (mCameraPositionNeedsUpdating) {
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(center, 17.5f));
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(center, 21.0f));
                 mCameraPositionNeedsUpdating = false;
             }
         }
@@ -202,6 +213,18 @@ public class WayFindingActivity extends AppCompatActivity implements GoogleMap.O
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                .permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+
+        tts=new TextToSpeech(this.getApplicationContext(), new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if(status != TextToSpeech.ERROR) {
+                    tts.setLanguage(Locale.UK);
+                }
+            }
+        });
         setContentView(R.layout.activity_way_finding);
 
         // prevent the screen going to sleep while app is on foreground
@@ -282,6 +305,8 @@ public class WayFindingActivity extends AppCompatActivity implements GoogleMap.O
                 return false;
             }
         });
+        LatLng pointTemp = new LatLng(7.135403,79.912424);
+        setWayfindingTarget(pointTemp, true);
     }
 
     private void setupPoIs(List<IAPOI> pois, int currentFloorLevel) {
@@ -391,7 +416,8 @@ public class WayFindingActivity extends AppCompatActivity implements GoogleMap.O
     public void onMapClick(LatLng point) {
         if (mPoIMarkers.isEmpty()) {
             // if PoIs exist, only allow wayfinding to PoI markers
-            setWayfindingTarget(point, true);
+//            LatLng pointTemp = new LatLng(7.135403,79.912424);
+//            setWayfindingTarget(point, true);
         }
     }
 
@@ -432,15 +458,49 @@ public class WayFindingActivity extends AppCompatActivity implements GoogleMap.O
             return false;
         }
 
-        final double FINISH_THRESHOLD_METERS = 1.0;
+        final double FINISH_THRESHOLD_METERS = 2.0;
         double routeLength = 0;
         for (IARoute.Leg leg : route.getLegs()) routeLength += leg.getLength();
-        if (Math.abs(routeLength-distance)> 1) {
+        if (Math.abs(routeLength-distance)> 2) {
             Toast.makeText(WayFindingActivity.this, String.valueOf(routeLength), Toast.LENGTH_SHORT).show();
             distance = routeLength;
+            if(distance>7 || (distance<5 && distance>2)){
+//                tts.speak("Go forward.", TextToSpeech.QUEUE_ADD, null);
+                generateFeedback("front");
+            } else if(distance<7 && distance>5){
+                tts.speak("turn right.", TextToSpeech.QUEUE_ADD, null);
+                generateFeedback("right");
+            } else {
+                tts.speak("Destination Reached.", TextToSpeech.QUEUE_ADD, null);
+                generateFeedback("all");
+            }
         }
         return routeLength < FINISH_THRESHOLD_METERS;
     }
+
+
+    public void generateFeedback(String command) {
+        String response;
+        try {
+            response = initiateFeedBack(command);
+//            Toast.makeText(WayFindingActivity.this, response, Toast.LENGTH_SHORT).show();
+        } catch (IOException e) {
+            Toast.makeText(WayFindingActivity.this, "Connection Lost", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public String initiateFeedBack(String command) throws IOException {
+        String url = "http://192.168.1.52/directions?direction=";
+        url += command;
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
+            return response.body().string();
+        }
+    }
+
 
 
 

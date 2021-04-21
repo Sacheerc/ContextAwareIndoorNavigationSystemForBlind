@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blind Navigation</string>
+    <string name="offer_area">Powierzchnia</string>
+    <string name="offer_buildingType">Typ budynku</string>
+    <string name="offer_currency">Waluta</string>
+    <string name="offer_deposit">Depozyt/Kaucja</string>
+    <string name="offer_description">Opis</string>
+    <string name="offer_extraCosts">Dodatkowe koszty</string>
+    <string name="offer_floor">Piętro</string>
+    <string name="offer_id">ID</string>
+    <string name="offer_price">Cena</string>
+    <string name="offer_rooms">Pokoje</string>
+    <string name="offer_title">Tytuł</string>
+    <string name="offer_type">Typ</string>
+    <string name="offer_pricingType">Typ opłat</string>
+    <string name="offer_image_description">Obrazek</string>
+    <string name="offer_id_value">ID Oferty</string>
+    <string name="offer_address">Adres</string>
+    <string name="wikitude_license">vf/t78Jx4VU2Tfk/leNSMZPv0ryrceqaqfMUVxvtd+flQWkk0aAqw224qFlwuaGvTIFLqxdxfCq6F4tWCl6QnQwaIVrrmBUTre9ZUcIB/B4C/yajM4Q+GSlk79kaB8U6pZO1gRXrWjsIalosu+SWx6WFLN5ikbPlgOtbafqFtVBTYWx0ZWRfX6abzOQ8MWtZWUYQfQeLHMnR3CSXSPekTFCPSD01afkpdu1M2eaKmNAkb5RNlxbFwSzerf+5qETNoqNIl5iPCM+RZPPxHiO/pR74CC4io7A5Zq6SCifqu8OR1bUxyTWhKZ6Se6gJEKHf5TmKePIN6sYA6DAIiWnoaz+b8Cf1CVi9UAYBfrzokDGB4V/cpIemErN9UvMLUJtpyrAJBJbI7qLFEmrFJPr+UCGu2L451BB0kvmZVvVBBJRmY8QmgjtaLi72FbA6NDWonx11/rXMStTaIFsrJQB6ZKEPqvMzvlk0m6Aj0LK9EvJOJAhN42+o4+TJyy/vSyO6WZKyz0sVRc0aFddi9F3aVVHIXepFtENzPK0g5aDgfsYOADwbBamwwEHYKBXvGHZsJix/Aib2ZNnB8YIdoTSoSg1ieFe/92cVSgN0BeeikXAPbzmVjL21kAzneUNvJxq7ftLfeuDQgMgDQlvUDMWYPnD46ODq7FqBKWswQbZlHBqkdVJcawvxUUFstbz9320dEkz7Hf0h8YS9zgXv4LJVni2gaFIBWzo3vVPli8Oi+KLS1pDThiaCjfLd67xqtZlI0MXeJBZYKM3IizPx4KNW/ZjZZuXAKFSovbg62VwNPqYNDVyx4vzjfMQF4dpBFlKGoWv3H+BzN33rZOQQunRKBA9nOPzinfI17Ql8Ju9AziI=</string>
+    <string name="button_close">Close</string>
+    <string name="no_floor">Nie dotyczy</string>
+</resources>
